@@ -89,13 +89,18 @@
           <td class="square" data-row="7" data-col="6"></td>
           <td class="square" data-row="7" data-col="7"></td>
         </tr>
-        <tr>
+       </tbody>
+       </table>
+
+
 const player1 = "black"; // プレイヤー1の色
 const player2 = "white"; // プレイヤー2の色
 let currentPlayer = player1; // 現在のプレイヤーを初期化
 const board = []; // 盤面を表す2次元配列
 const squares = document.querySelectorAll(".square"); // 盤面のマスを取得
 
+
+<script>
 // 盤面を初期化する関数
 function initializeBoard() {
   for (let i = 0; i < 8; i++) {
