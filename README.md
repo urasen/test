@@ -1,35 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>勤怠管理bot</title>
-</head>
-<body>
-	<h1>勤怠管理bot</h1>
-
-	<form>
-		<label for="name">名前:</label>
-		<input type="text" id="name" name="name"><br>
-
-		<label for="date">日付:</label>
-		<input type="date" id="date" name="date"><br>
-
-		<label for="start">出勤時間:</label>
-		<input type="time" id="start" name="start"><br>
-
-		<label for="end">退勤時間:</label>
-		<input type="time" id="end" name="end"><br>
-
-		<input type="button" value="登録" onclick="addRecord()">
-	</form>
-
-	<table>
-		<tr>
-			<th>名前</th>
-			<th>日付</th>
-			<th>出勤時間</th>
-<!DOCTYPE html>
-<html>
-<head>
 	<title>勤怠管理システム</title>
 </head>
 <body>
