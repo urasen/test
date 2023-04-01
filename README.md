@@ -27,67 +27,60 @@
 			<th>名前</th>
 			<th>日付</th>
 			<th>出勤時間</th>
-			<th>退勤時間</th>
-			<th>勤務時間</th>
-		</tr>
-	</table>
+<!DOCTYPE html>
+<html>
+<head>
+	<title>勤怠管理システム</title>
+</head>
+<body>
+	<h1>勤怠管理システム</h1>
+	<p>社員名：</p>
+	<input type="text" id="employee-name">
+	<br><br>
+	<p>出勤時間を入力してください：</p>
+	<input type="time" id="start-time">
+	<br><br>
+	<p>退勤時間を入力してください：</p>
+	<input type="time" id="end-time">
+	<br><br>
+	<p>休暇申請：</p>
+	<select id="vacation-request">
+		<option value="none">なし</option>
+		<option value="am">午前休</option>
+		<option value="pm">午後休</option>
+		<option value="all">全休</option>
+	</select>
+	<br><br>
+	<button onclick="recordAttendance()">勤怠を記録する</button>
+	<br><br>
+	<p>社員名：</p>
+	<span id="employee-name-display"></span>
+	<br><br>
+	<p>労働時間：</p>
+	<span id="work-time"></span>
+	<br><br>
+	<p>休暇申請：</p>
+	<span id="vacation-request-display"></span>
 
 	<script>
-		let records = [];
+		function recordAttendance() {
+			var employeeName = document.getElementById("employee-name").value;
+			var startTime = document.getElementById("start-time").value;
+			var endTime = document.getElementById("end-time").value;
+			var vacationRequest = document.getElementById("vacation-request").value;
 
-		function addRecord() {
-			let name = document.getElementById("name").value;
-			let date = document.getElementById("date").value;
-			let start = document.getElementById("start").value;
-			let end = document.getElementById("end").value;
+			var start = new Date("2023-04-02T" + startTime + ":00");
+			var end = new Date("2023-04-02T" + endTime + ":00");
 
-			let record = {
-				name: name,
-				date: date,
-				start: start,
-				end: end
-			};
+			var diff = end.getTime() - start.getTime();
+			var hours = Math.floor(diff / (1000 * 60 * 60));
+			var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-			records.push(record);
-			displayRecords();
+			var workTime = hours + "時間" + minutes + "分";
+			document.getElementById("employee-name-display").innerHTML = employeeName;
+			document.getElementById("work-time").innerHTML = workTime;
+			document.getElementById("vacation-request-display").innerHTML = vacationRequest;
 		}
-
-		function displayRecords() {
-			let table = document.querySelector("table");
-
-			for (let i = table.rows.length - 1; i > 0; i--) {
-				table.deleteRow(i);
-			}
-
-			for (let i = 0; i < records.length; i++) {
-				let row = table.insertRow(-1);
-				let nameCell = row.insertCell(0);
-				let dateCell = row.insertCell(1);
-				let startCell = row.insertCell(2);
-				let endCell = row.insertCell(3);
-				let durationCell = row.insertCell(4);
-
-				nameCell.innerHTML = records[i].name;
-				dateCell.innerHTML = records[i].date;
-				startCell.innerHTML = records[i].start;
-				endCell.innerHTML = records[i].end;
-
-				let start_time = new Date(records[i].date + "T" + records[i].start);
-				let end_time = new Date(records[i].date + "T" + records[i].end);
-				let duration = (end_time.getTime() - start_time.getTime()) / (1000 *
-			60 * 60);
-
-			durationCell.innerHTML = formatDuration(duration);
-		}
-	}
-
-	function formatDuration(duration) {
-		let hours = Math.floor(duration / 3600);
-		let minutes = Math.floor((duration % 3600) / 60);
-
-		return hours + "時間" + minutes + "分";
-	}
-</script>
+	</script>
 </body>
 </html>
-
