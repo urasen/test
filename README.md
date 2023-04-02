@@ -18,8 +18,7 @@
       <label for="vacation_time">休暇時間:</label>
       <input type="number" id="vacation_time" name="vacation_time" min="0"><br><br>
       <input type="button" value="登録" onclick="saveData()">
-      <input type="button" value="CSVダウンロード" onclick="downloadCSV()">
-      <input type="button" value="データリセット" onclick="resetData()">
+      <input type="button" value="リセット" onclick="resetData()">
     </form>
     <h2>登録済みデータ</h2>
     <table id="data_table">
@@ -32,10 +31,6 @@
       </tr>
     </table>
     <script>
-      // 登録済みデータの配列
-      var data_array = [];
-
-      // データを保存する
       function saveData() {
         // 入力された値を取得
         var name = document.getElementById("name").value;
@@ -53,78 +48,79 @@
           vacation_time: vacation_time
         };
 
-        // データを配列に追加
-        data_array.push(data);
+        // 保存済みデータを取得
+        var saved_data = localStorage.getItem("saved_data");
+        if (saved_data) {
+          // 保存済みデータがあれば、JSON形式からオブジェクトに変換する
+          saved_data = JSON.parse(saved_data);
+        } else {
+          // 保存済みデータがなければ、空の配列を用意する
+          saved_data = [];
+        }
 
-        // テーブルにデータを表示する
-        displayData();
+        // 入力されたデータを保存済みデータに追加する
+        saved_data.push(data);
 
-        // 入力フォームをクリアする
-        clearForm();
-      }
+        // 保存済みデータをJSON形式に変換して、ローカルストレージに保存する
+        var saved_data_json = JSON.stringify(saved_data);
+        localStorage.setItem("saved_data", saved_data_json);
 
-      // データを表示する
-      function displayData() {
-        // テーブルのtbodyを取得
-        var tbody = document.getElementById("data_table").getElementsByTagName("tbody")[0];
+        // テーブルに登録済みデータを表示する
+        var table = document.getElementById("data_table");
+	  var newRow = table.insertRow();
 
-        // tbodyを初期化する
-        tbody.innerHTML = "";
+    var nameCell = newRow.insertCell();
+    var dateCell = newRow.insertCell();
+    var startTimeCell = newRow.insertCell();
+    var endTimeCell = newRow.insertCell();
+    var vacationTimeCell = newRow.insertCell();
 
-       // データをテーブルに表示する
-      for (var i = 0; i < data_array.length; i++) {
-      var data = data_array[i];
-      var row = tbody.insertRow(-1);
-      var nameCell = row.insertCell(0);
-      var dateCell = row.insertCell(1);
-      var startTimeCell = row.insertCell(2);
-      var endTimeCell = row.insertCell(3);
-      var vacationTimeCell = row.insertCell(4);
-      nameCell.innerHTML = data.name;
-      dateCell.innerHTML = data.date;
-      startTimeCell.innerHTML = data.start_time;
-      endTimeCell.innerHTML = data.end_time;
-      vacationTimeCell.innerHTML = data.vacation_time;
-      }
-    }
-  // 入力フォームをクリアする
-  function clearForm() {
+    nameCell.innerHTML = name;
+    dateCell.innerHTML = date;
+    startTimeCell.innerHTML = start_time;
+    endTimeCell.innerHTML = end_time;
+    vacationTimeCell.innerHTML = vacation_time;
+  }
+
+  function resetData() {
+    // 入力フォームの値をリセットする
     document.getElementById("name").value = "";
     document.getElementById("date").value = "";
     document.getElementById("start_time").value = "";
     document.getElementById("end_time").value = "";
     document.getElementById("vacation_time").value = "";
+
+    // ローカルストレージから保存済みデータを削除する
+    localStorage.removeItem("saved_data");
+
+    // 登録済みデータを表示しているテーブルを初期化する
+    var table = document.getElementById("data_table");
+    table.innerHTML = "<tr><th>名前</th><th>日付</th><th>出勤時刻</th><th>退勤時刻</th><th>休暇時間</th></tr>";
   }
 
-  // データをCSV形式でダウンロードする
-  function downloadCSV() {
-    // ヘッダー行を作成
-    var csv = "名前,日付,出勤時刻,退勤時刻,休暇時間\n";
+  // ロード時に保存済みデータをテーブルに表示する
+  window.onload = function() {
+    var saved_data = localStorage.getItem("saved_data");
+    if (saved_data) {
+      saved_data = JSON.parse(saved_data);
+      var table = document.getElementById("data_table");
+      for (var i = 0; i < saved_data.length; i++) {
+        var newRow = table.insertRow();
 
-    // データ行を作成
-    for (var i = 0; i < data_array.length; i++) {
-      var data = data_array[i];
-      csv += data.name + "," + data.date + "," + data.start_time + "," + data.end_time + "," + data.vacation_time + "\n";
+        var nameCell = newRow.insertCell();
+        var dateCell = newRow.insertCell();
+        var startTimeCell = newRow.insertCell();
+        var endTimeCell = newRow.insertCell();
+        var vacationTimeCell = newRow.insertCell();
+
+        nameCell.innerHTML = saved_data[i].name;
+        dateCell.innerHTML = saved_data[i].date;
+        startTimeCell.innerHTML = saved_data[i].start_time;
+        endTimeCell.innerHTML = saved_data[i].end_time;
+        vacationTimeCell.innerHTML = saved_data[i].vacation_time;
+      }
     }
-
-    // CSVファイルを作成
-    var blob = new Blob([csv], { type: "text/csv" });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement("a");
-    a.download = "data.csv";
-    a.href = url;
-    a.click();
-  }
-
-  // データをリセットする
-  function resetData() {
-    // 配列を初期化する
-    data_array = [];
-
-    // テーブルを初期化する
-    var tbody = document.getElementById("data_table").getElementsByTagName("tbody")[0];
-    tbody.innerHTML = "";
-  }
+  };
 </script>
- </body>
-</html>                                            
+</body>
+</html>
