@@ -32,6 +32,10 @@
       </tr>
     </table>
     <script>
+      // 登録済みデータの配列
+      var data_array = [];
+
+      // データを保存する
       function saveData() {
         // 入力された値を取得
         var name = document.getElementById("name").value;
@@ -49,170 +53,78 @@
           vacation_time: vacation_time
         };
 
-        // 保存済みデータを取得
-        var saved_data = localStorage.getItem("saved_data");
-        if (saved_data) {
-          // 保存済みデータがあれば、JSON形式からオブジェクトに変換する
-          saved_data = JSON.parse(saved_data);
-        } else {
-          // 保存済みデータがなければ、空の配列を作成する
-          saved_data = [];
-        }
+        // データを配列に追加
+        data_array.push(data);
 
-        // 新しいデータを追加する
-        saved_data.push(data);
+        // テーブルにデータを表示する
+        displayData();
 
-        // 更新されたデータを保存する
-        localStorage.setItem("saved_data", JSON.stringify(saved_data));
-
-        // テーブルに反映する
-        updateTable();
+        // 入力フォームをクリアする
+        clearForm();
       }
 
-      function updateTable() {
-        // 保存済みデータを取得
-        var saved_data = localStorage.getItem("saved_data");
-    // 保存済みデータを更新する
-    var updated_data = false;
-    for (var i = 0; i < saved_data.length; i++) {
-      var saved_item = saved_data[i];
-      if (saved_item.name == name && saved_item.date == date) {
-        saved_item.start_time = start_time;
-        saved_item.end_time = end_time;
-        saved_item.vacation_time = vacation_time;
-        updated_data = true;
-        break;
-      }
-    }
-    if (!updated_data) {
-      // 新しいデータを追加する
-      saved_data.push(data);
-    }
-
-    // データをローカルストレージに保存する
-    localStorage.setItem("saved_data", JSON.stringify(saved_data));
-
-    // テーブルにデータを表示する
-    displayData();
-  }
-
-  function downloadCSV() {
-    // 保存済みデータを取得
-    var saved_data = localStorage.getItem("saved_data");
-    if (saved_data) {
-      // CSV形式に変換する
-      var csv_data = "名前,日付,出勤時刻,退勤時刻,休暇時間\n";
-      saved_data = JSON.parse(saved_data);
-      for (var i = 0; i < saved_data.length; i++) {
-        var item = saved_data[i];
-        csv_data += item.name + "," + item.date + "," + item.start_time + "," + item.end_time + "," + item.vacation_time + "\n";
-      }
-
-      // ダウンロード用のリンクを作成する
-      var blob = new Blob([csv_data], {type: "text/csv;charset=utf-8;"});
-      var link = document.createElement("a");
-      var url = URL.createObjectURL(blob);
-      link.setAttribute("href", url);
-      link.setAttribute("download", "data.csv");
-      link.style.visibility = "hidden";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else {
-      alert("データがありません。");
-    }
-  }
-
-  function resetData() {
-    // ローカルストレージからデータを削除する
-    localStorage.removeItem("saved_data");
-
-    // テーブルをクリアする
-    var table = document.getElementById("data_table");
-    var rows = table.rows;
-    for (var i = rows.length - 1; i > 0; i--) {
-      table.deleteRow(i);
-    }
-  }
-
-  function displayData() {
-    // 保存済みデータを取得してテーブルに表示する
-    var saved_data = localStorage.getItem("saved_data");
-    if (saved_data) {
-      saved_data = JSON.parse(saved_data);
-      var table = document.getElementById("data_table");
-      var rows = table.rows;
-      // すでに表示されているデータをクリアする
-      for (var i = rows.length - 1; i > 0; i--) {
-        table.deleteRow(i);
-      }
       // データを表示する
-      for (var i = 0; i < saved_data.length; i++) {
-        var item = saved_data[i];
-        var row = table.insertRow();
-        row.insertCell().textContent = item.name;
-        row.insertCell().textContent = item.date;
-        row.insertCell().textContent = item.start_time;
-        row
-    }
+      function displayData() {
+        // テーブルのtbodyを取得
+        var tbody = document.getElementById("data_table").getElementsByTagName("tbody")[0];
 
-    // データを保存する
-    localStorage.setItem("saved_data", JSON.stringify(saved_data));
+        // tbodyを初期化する
+        tbody.innerHTML = "";
 
-    // テーブルに行を追加する
-    var table = document.getElementById("data_table");
-    var row = table.insertRow(-1);
-    var name_cell = row.insertCell(0);
-    var date_cell = row.insertCell(1);
-    var start_time_cell = row.insertCell(2);
-    var end_time_cell = row.insertCell(3);
-    var vacation_time_cell = row.insertCell(4);
-    name_cell.innerHTML = name;
-    date_cell.innerHTML = date;
-    start_time_cell.innerHTML = start_time;
-    end_time_cell.innerHTML = end_time;
-    vacation_time_cell.innerHTML = vacation_time;
-  }
-
-  function downloadCSV() {
-    // 保存済みデータを取得
-    var saved_data = localStorage.getItem("saved_data");
-    if (saved_data) {
-      // 保存済みデータがあれば、JSON形式からオブジェクトに変換する
-      saved_data = JSON.parse(saved_data);
-      // CSV形式の文字列を作成する
-      var csv_data = "名前,日付,出勤時刻,退勤時刻,休暇時間\n";
-      for (var i = 0; i < saved_data.length; i++) {
-        csv_data += saved_data[i].name + "," +
-                    saved_data[i].date + "," +
-                    saved_data[i].start_time + "," +
-                    saved_data[i].end_time + "," +
-                    saved_data[i].vacation_time + "\n";
+       // データをテーブルに表示する
+      for (var i = 0; i < data_array.length; i++) {
+      var data = data_array[i];
+      var row = tbody.insertRow(-1);
+      var nameCell = row.insertCell(0);
+      var dateCell = row.insertCell(1);
+      var startTimeCell = row.insertCell(2);
+      var endTimeCell = row.insertCell(3);
+      var vacationTimeCell = row.insertCell(4);
+      nameCell.innerHTML = data.name;
+      dateCell.innerHTML = data.date;
+      startTimeCell.innerHTML = data.start_time;
+      endTimeCell.innerHTML = data.end_time;
+      vacationTimeCell.innerHTML = data.vacation_time;
       }
-      // ダウンロード用のリンクを作成する
-      var link = document.createElement("a");
-      link.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv_data);
-      link.download = "data.csv";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else {
-      alert("保存されたデータがありません。");
     }
+  // 入力フォームをクリアする
+  function clearForm() {
+    document.getElementById("name").value = "";
+    document.getElementById("date").value = "";
+    document.getElementById("start_time").value = "";
+    document.getElementById("end_time").value = "";
+    document.getElementById("vacation_time").value = "";
   }
 
+  // データをCSV形式でダウンロードする
+  function downloadCSV() {
+    // ヘッダー行を作成
+    var csv = "名前,日付,出勤時刻,退勤時刻,休暇時間\n";
+
+    // データ行を作成
+    for (var i = 0; i < data_array.length; i++) {
+      var data = data_array[i];
+      csv += data.name + "," + data.date + "," + data.start_time + "," + data.end_time + "," + data.vacation_time + "\n";
+    }
+
+    // CSVファイルを作成
+    var blob = new Blob([csv], { type: "text/csv" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.download = "data.csv";
+    a.href = url;
+    a.click();
+  }
+
+  // データをリセットする
   function resetData() {
-    // 保存されたデータを削除する
-    localStorage.removeItem("saved_data");
+    // 配列を初期化する
+    data_array = [];
 
-    // テーブルの行を削除する
-    var table = document.getElementById("data_table");
-    var rows = table.rows.length;
-    for (var i = 1; i < rows; i++) {
-      table.deleteRow(1);
-    }
+    // テーブルを初期化する
+    var tbody = document.getElementById("data_table").getElementsByTagName("tbody")[0];
+    tbody.innerHTML = "";
   }
-
 </script>
-  </body>
-</html>
+ </body>
+</html>                                            
